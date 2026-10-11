@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 오늘의 청소 요정 ✨</title>
+    <!-- 귀여운 한글 폰트 (구글 Jua체) 적용 -->
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Jua', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 30px;
+            border: 4px dashed #ffb6c1;
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+            text-align: center;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        h1 {
+            color: #ff7675;
+            font-size: 36px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0px #ffeaa7;
+        }
+
+        p {
+            color: #74b9ff;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        /* 남은 학생 수 표시 바 */
+        .status-badge {
+            display: inline-block;
+            background-color: #eccc68;
+            color: #2f3542;
+            padding: 6px 16px;
+            border-radius: 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            border: none;
+            padding: 14px 24px;
+            font-size: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .btn-draw {
+            background-color: #ffeaa7;
+            color: #ff7675;
+            box-shadow: 0 6px 0 #fdcb6e;
+        }
+
+        .btn-draw:hover {
+            background-color: #ffe082;
+        }
+
+        .btn-draw:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #fdcb6e;
+        }
+
+        /* 버튼이 비활성화되었을 때 */
+        .btn-draw:disabled {
+            background-color: #dfe6e9;
+            color: #b2bec3;
+            box-shadow: 0 6px 0 #b2bec3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background-color: #ff7675;
+            color: white;
+            box-shadow: 0 6px 0 #d63031;
+        }
+
+        .btn-reset:hover {
+            background-color: #e17055;
+        }
+
+        .btn-reset:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #d63031;
+        }
+
+        .result-box {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+            min-height: 70px;
+        }
+
+        .number-card {
+            background-color: #74b9ff;
+            color: white;
+            font-size: 28px;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 5px 0 #0984e3, inset 0 -3px 5px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: scale(0.5);
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .number-card:nth-child(1) { background-color: #ff7675; box-shadow: 0 5px 0 #d63031; }
+        .number-card:nth-child(2) { background-color: #fdcb6e; box-shadow: 0 5px 0 #e1b12c; }
+        .number-card:nth-child(3) { background-color: #55efc4; box-shadow: 0 5px 0 #00b894; }
+        .number-card:nth-child(4) { background-color: #74b9ff; box-shadow: 0 5px 0 #0984e3; }
+        .number-card:nth-child(5) { background-color: #a29bfe; box-shadow: 0 5px 0 #6c5ce7; }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3) translateY(20px); }
+            50% { opacity: 1; transform: scale(1.1) translateY(-10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .history-container {
+            margin-top: 30px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid #dfe6e9;
+        }
+
+        .history-title {
+            font-size: 20px;
+            color: #2d3436;
+            margin-bottom: 10px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .history-list::-webkit-scrollbar { width: 8px; }
+        .history-list::-webkit-scrollbar-track { background: #f1f2f6; border-radius: 10px; }
+        .history-list::-webkit-scrollbar-thumb { background: #b2bec3; border-radius: 10px; }
+
+        .history-item {
+            background: white;
+            margin-bottom: 8px;
+            padding: 12px 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 6px solid #a29bfe;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .history-badge {
+            background-color: #ffeaa7;
+            color: #d63031;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-right: 15px;
+            white-space: nowrap;
+        }
+
+        .history-numbers {
+            font-size: 18px;
+            color: #2d3436;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>✨ 오늘의 청소 요정 ✨</h1>
+        <p>1번부터 25번 중 5명의 요정을 뽑아요!</p>
+        
+        <div class="status-badge" id="statusBadge">남은 학생: 25명</div>
+
+        <div class="btn-group">
+            <button id="drawBtn" class="btn-draw">요정 뽑기 🧚‍♀️</button>
+            <button id="resetBtn" class="btn-reset">초기화 🔄</button>
+        </div>
+        
+        <div class="result-box" id="result"></div>
+
+        <div class="history-container">
+            <div class="history-title">📜 요정 기록부</div>
+            <ul class="history-list" id="historyList"></ul>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_STUDENTS = 25;
+        const SELECT_COUNT = 5;
+
+        // 남아있는 학생 번호를 저장할 배열
+        let remainingStudents = [];
+        let drawCount = 0;
+
+        const drawBtn = document.getElementById('drawBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resultBox = document.getElementById('result');
+        const historyList = document.getElementById('historyList');
+        const statusBadge = document.getElementById('statusBadge');
+
+        // 앱 초기화 함수
+        function initApp() {
+            remainingStudents = [];
+            for (let i = 1; i <= TOTAL_STUDENTS; i++) {
+                remainingStudents.push(i);
+            }
+            drawCount = 0;
+            resultBox.innerHTML = '';
+            historyList.innerHTML = '';
+            drawBtn.disabled = false;
+            drawBtn.innerText = '요정 뽑기 🧚‍♀️';
+            updateStatus();
+        }
+
+        // 남은 학생 수 상태 업데이트
+        function updateStatus() {
+            statusBadge.innerText = `남은 학생: ${remainingStudents.length}명 / 총 ${TOTAL_STUDENTS}명`;
+        }
+
+        // 요정 뽑기 실행
+        drawBtn.addEventListener('click', function() {
+            if (remainingStudents.length === 0) {
+                alert('모든 학생이 청소당번으로 선정되었습니다!');
+                return;
+            }
+
+            // 남은 학생 명단을 무작위로 섞기
+            for (let i = remainingStudents.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const temp = remainingStudents[i];
+                remainingStudents[i] = remainingStudents[j];
+                remainingStudents[j] = temp;
+            }
+
+            // 이번 회차에 뽑을 인원 (기본 5명)
+            const countToPick = Math.min(SELECT_COUNT, remainingStudents.length);
+            
+            // 남은 배열에서 앞에서부터 countToPick 만큼 꺼내고 원래 배열에서 제거
+            const selectedStudents = remainingStudents.splice(0, countToPick).sort((a, b) => a - b);
+
+            // 구슬 생성 및 출력
+            resultBox.innerHTML = '';
+            selectedStudents.forEach((num, index) => {
+                const card = document.createElement('div');
+                card.className = 'number-card';
+                card.innerText = num;
+                card.style.animationDelay = (index * 0.15) + 's';
+                resultBox.appendChild(card);
+            });
+
+            // 기록부 추가
+            drawCount++;
+            const historyItem = document.createElement('li');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = 
+                '<span class="history-badge">' + drawCount + '회차</span>' +
+                '<span class="history-numbers">' + selectedStudents.join(', ') + '</span>';
+            historyList.insertBefore(historyItem, historyList.firstChild);
+
+            // 상태 업데이트
+            updateStatus();
+
+            // 25명 모두 선정 완료 시 처리
+            if (remainingStudents.length === 0) {
+                drawBtn.disabled = true;
+                drawBtn.innerText = '모두 뽑기 완료! 🎉';
+            }
+        });
+
+        // 초기화 버튼
+        resetBtn.addEventListener('click', function() {
+            if (confirm('모든 기록을 초기화하고 처음부터 다시 시작할까요?')) {
+                initApp();
+            }
+        });
+
+        // 첫 실행 시 초기화
+        initApp();
+    </script>
+
+</body>
+</html>
